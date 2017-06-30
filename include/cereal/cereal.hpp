@@ -38,6 +38,8 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
+#include <map>
+#include <any>
 
 #include "cereal/macros.hpp"
 #include "cereal/details/traits.hpp"
@@ -233,7 +235,49 @@ namespace cereal
   template<class ArchiveType, std::uint32_t Flags = 0>
   class OutputArchive : public detail::OutputArchiveBase
   {
+	//START MV PATCH
+    private:
+	  std::map<std::string, std::any> storage;
     public:
+
+		template <class T, class ... Types> inline
+			ArchiveType & add(NameValuePair<T> &pair)
+		{
+			storage[pair.name] = pair.value;
+			return *self;
+		}
+
+		template <class T, class ... Types> inline
+			ArchiveType & add(NameValuePair<T> &pair, Types && ... args)
+		{
+			storage[pair.name] = pair.value;
+			self->add(std::forward<Types>(args)...);
+			return *self;
+		}
+
+		template <class T, class ... Types> inline
+			ArchiveType & extract(NameValuePair<T> &pair)
+		{
+			auto found = storage.find(pair.name);
+			if (found != storage.end())
+				pair.value = std::any_cast<T>(found->second);
+
+			return *self;
+		}
+
+		template <class T, class ... Types> inline
+			ArchiveType & extract(NameValuePair<T> &pair, Types && ... args)
+		{
+			auto found = storage.find(pair.name);
+			if (found != storage.end())
+				pair.value = std::any_cast<T>(found->second);
+
+			self->extract(std::forward<Types>(args)...);
+			return *self;
+		}
+
+	  //END MV PATCH
+  public:
       //! Construct the output archive
       /*! @param derived A pointer to the derived ArchiveType (pass this from the derived archive) */
       OutputArchive(ArchiveType * const derived) : self(derived), itsCurrentPointerId(1), itsCurrentPolymorphicTypeId(1)
@@ -598,6 +642,48 @@ namespace cereal
   template<class ArchiveType, std::uint32_t Flags = 0>
   class InputArchive : public detail::InputArchiveBase
   {
+	  //START MV PATCH
+  private:
+	  std::map<std::string, std::any> storage;
+  public:
+	  template <class T, class ... Types> inline
+		  ArchiveType & add(NameValuePair<T> &pair)
+	  {
+		  storage[pair.name] = pair.value;
+		  return *self;
+	  }
+
+	  template <class T, class ... Types> inline
+		  ArchiveType & add(NameValuePair<T> &pair, Types && ... args)
+	  {
+		  storage[pair.name] = pair.value;
+		  self->add(std::forward<Types>(args)...);
+		  return *self;
+	  }
+
+	  template <class T, class ... Types> inline
+		  ArchiveType & extract(NameValuePair<T> &pair)
+	  {
+		  auto found = storage.find(pair.name);
+		  if (found != storage.end())
+			  pair.value = std::any_cast<T>(found->second);
+
+		  return *self;
+	  }
+
+	  template <class T, class ... Types> inline
+		  ArchiveType & extract(NameValuePair<T> &pair, Types && ... args)
+	  {
+		  auto found = storage.find(pair.name);
+		  if (found != storage.end())
+			  pair.value = std::any_cast<T>(found->second);
+
+		  self->extract(std::forward<Types>(args)...);
+		  return *self;
+	  }
+	  //END MV PATCH
+  public:
+
     public:
       //! Construct the output archive
       /*! @param derived A pointer to the derived ArchiveType (pass this from the derived archive) */

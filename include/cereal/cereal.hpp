@@ -973,9 +973,14 @@ namespace cereal
           return lookupResult->second;
         else // need to load
         {
-          std::uint32_t version;
-
-          process( make_nvp<ArchiveType>("cereal_class_version", version) );
+		  //BEGIN MV PATCH
+          std::uint32_t version = 0;
+		  try {
+			  process(make_nvp<ArchiveType>("cereal_class_version", version));
+		  } catch (...) {
+			  //shut the fuck up, this is fine.
+		  }
+		  //END MV PATCH
           itsVersionedTypes.emplace_hint( lookupResult, hash, version );
 
           return version;

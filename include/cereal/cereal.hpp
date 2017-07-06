@@ -39,7 +39,7 @@
 #include <cstdint>
 #include <functional>
 #include <map>
-#include <any>
+#include <boost/any.hpp>
 
 #include "cereal/macros.hpp"
 #include "cereal/details/traits.hpp"
@@ -237,7 +237,7 @@ namespace cereal
   {
 	//START MV PATCH
     private:
-	  std::map<std::string, std::any> storage;
+	  std::map<std::string, boost::any> storage;
     public:
 
 		template <class T, class ... Types> inline
@@ -260,7 +260,7 @@ namespace cereal
 		{
 			auto found = storage.find(pair.name);
 			if (found != storage.end())
-				pair.value = std::any_cast<T>(found->second);
+				pair.value = boost::any_cast<T>(found->second);
 
 			return *self;
 		}
@@ -270,7 +270,7 @@ namespace cereal
 		{
 			auto found = storage.find(pair.name);
 			if (found != storage.end())
-				pair.value = std::any_cast<T>(found->second);
+				pair.value = boost::any_cast<T>(found->second);
 
 			self->extract(std::forward<Types>(args)...);
 			return *self;
@@ -644,7 +644,7 @@ namespace cereal
   {
 	  //START MV PATCH
   private:
-	  std::map<std::string, std::any> storage;
+	  std::map<std::string, boost::any> storage;
   public:
 	  template <class T, class ... Types> inline
 		  ArchiveType & add(NameValuePair<T> &pair)
@@ -666,7 +666,7 @@ namespace cereal
 	  {
 		  auto found = storage.find(pair.name);
 		  if (found != storage.end())
-			  pair.value = std::any_cast<T>(found->second);
+			  pair.value = boost::any_cast<T>(found->second);
 
 		  return *self;
 	  }
@@ -676,7 +676,7 @@ namespace cereal
 	  {
 		  auto found = storage.find(pair.name);
 		  if (found != storage.end())
-			  pair.value = std::any_cast<T>(found->second);
+			  pair.value = boost::any_cast<T>(found->second);
 
 		  self->extract(std::forward<Types>(args)...);
 		  return *self;

@@ -241,14 +241,14 @@ namespace cereal
     public:
 
 		template <class T, class ... Types> inline
-			ArchiveType & add(NameValuePair<T> &pair)
+			ArchiveType & add(const NameValuePair<T> &pair)
 		{
 			storage[pair.name] = pair.value;
 			return *self;
 		}
 
 		template <class T, class ... Types> inline
-			ArchiveType & add(NameValuePair<T> &pair, Types && ... args)
+			ArchiveType & add(const NameValuePair<T> &pair, Types && ... args)
 		{
 			storage[pair.name] = pair.value;
 			self->add(std::forward<Types>(args)...);
@@ -256,7 +256,7 @@ namespace cereal
 		}
 
 		template <class T, class ... Types> inline
-			ArchiveType & extract(NameValuePair<T> &pair)
+			ArchiveType & extract(const NameValuePair<T> &pair)
 		{
 			auto found = storage.find(pair.name);
 			if (found != storage.end())
@@ -266,7 +266,7 @@ namespace cereal
 		}
 
 		template <class T, class ... Types> inline
-			ArchiveType & extract(NameValuePair<T> &pair, Types && ... args)
+			ArchiveType & extract(const NameValuePair<T> &pair, Types && ... args)
 		{
 			auto found = storage.find(pair.name);
 			if (found != storage.end())
@@ -647,14 +647,14 @@ namespace cereal
 	  std::map<std::string, boost::any> storage;
   public:
 	  template <class T, class ... Types> inline
-		  ArchiveType & add(NameValuePair<T> &pair)
+		  ArchiveType & add(const NameValuePair<T> &pair)
 	  {
 		  storage[pair.name] = pair.value;
 		  return *self;
 	  }
 
 	  template <class T, class ... Types> inline
-		  ArchiveType & add(NameValuePair<T> &pair, Types && ... args)
+		  ArchiveType & add(const NameValuePair<T> &pair, Types && ... args)
 	  {
 		  storage[pair.name] = pair.value;
 		  self->add(std::forward<Types>(args)...);
@@ -662,7 +662,7 @@ namespace cereal
 	  }
 
 	  template <class T, class ... Types> inline
-		  ArchiveType & extract(NameValuePair<T> &pair)
+		  ArchiveType & extract(const NameValuePair<T> &pair)
 	  {
 		  auto found = storage.find(pair.name);
 		  if (found != storage.end())
@@ -672,7 +672,7 @@ namespace cereal
 	  }
 
 	  template <class T, class ... Types> inline
-		  ArchiveType & extract(NameValuePair<T> &pair, Types && ... args)
+		  ArchiveType & extract(const NameValuePair<T> &pair, Types && ... args)
 	  {
 		  auto found = storage.find(pair.name);
 		  if (found != storage.end())
